@@ -1,0 +1,14 @@
+/* Import Tailwind's base styles, component classes, and utility classes */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* A few custom base styles */
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+/* Smooth transitions on status badge color changes */
+.status-badge {
+  @apply transition-colors duration-200;
+}
