@@ -1,55 +1,163 @@
-# Team Task Manager
+================================================================================
+                         TEAM TASK MANAGER
+                     Full-Stack Web Application
+================================================================================
 
-This is a full-stack project I built to understand how real-world team collaboration tools work. The idea was to create something similar to a simplified version of tools like Trello or Jira, where multiple users can work together on projects and track tasks.
+LIVE APP    : https://team-task-manager-production-7654.up.railway.app
+GITHUB REPO : https://github.com/notadvitiya/team-task-manager
 
-## What it does
+================================================================================
+FEATURES
+================================================================================
 
-Users can create an account, log in, and start creating projects. Inside each project, tasks can be added, assigned to team members, and moved across different stages like "To Do", "In Progress", and "Done".
+- Authentication       : Signup & Login with JWT tokens, passwords hashed with bcrypt
+- Role-Based Access    : Admins manage everything, Members update only their own tasks
+- Project Management   : Create projects, invite members by email
+- Task Management      : Create tasks with title, description, due date, priority, assignee
+- Task Board           : Tasks grouped into To Do / In Progress / Done columns
+- Dashboard            : Summary cards showing total tasks, overdue, and status breakdown
 
-Each project also supports multiple members with different roles.
+================================================================================
+TECH STACK
+================================================================================
 
-## Main features
+Frontend   : React + Vite, Tailwind CSS, React Query, React Router
+Backend    : Node.js, Express
+Database   : PostgreSQL
+Auth       : JWT + bcrypt
+Deployment : Railway
 
-- Authentication using JWT  
-- Create and manage projects  
-- Add members to a project  
-- Role-based access:
-  - Admin → full control
-  - Member → can update assigned tasks  
-- Task management:
-  - title, description, priority, due date
-  - assign tasks to users
-  - update status  
-- Basic dashboard showing task stats  
+================================================================================
+PROJECT STRUCTURE
+================================================================================
 
-## Tech stack
+team-task-manager/
+├── backend/
+│   └── src/
+│       ├── db/
+│       │   ├── schema.sql        Database tables
+│       │   ├── pool.js           PostgreSQL connection
+│       │   └── init.js           Auto-runs schema on startup
+│       ├── middleware/
+│       │   ├── auth.js           JWT verification
+│       │   └── rbac.js           Role-based access control
+│       ├── routes/
+│       │   ├── auth.js           Signup & Login
+│       │   ├── projects.js       Project CRUD
+│       │   ├── tasks.js          Task CRUD
+│       │   └── dashboard.js      Dashboard stats
+│       └── index.js              Express app entry point
+└── frontend/
+    └── src/
+        ├── api/
+        │   └── client.js         Axios instance with JWT interceptor
+        ├── context/
+        │   └── AuthContext.jsx   Global auth state
+        ├── components/
+        │   ├── Navbar.jsx
+        │   ├── TaskCard.jsx
+        │   ├── TaskModal.jsx
+        │   └── StatusBadge.jsx
+        └── pages/
+            ├── Login.jsx
+            ├── Signup.jsx
+            ├── Dashboard.jsx
+            └── ProjectDetail.jsx
 
-Frontend:
-- React (Vite)
-- Tailwind CSS
+================================================================================
+LOCAL SETUP
+================================================================================
 
-Backend:
-- Node.js
-- Express
+PREREQUISITES
+-------------
+- Node.js v18+
+- PostgreSQL 16
+- Git
 
-Database:
-- PostgreSQL
+STEP 1 - Clone the repo
+-----------------------
+  git clone https://github.com/notadvitiya/team-task-manager.git
+  cd team-task-manager
 
-Auth:
-- JWT (JSON Web Tokens)
+STEP 2 - Backend Setup
+-----------------------
+  cd backend
+  npm install
+  cp .env.example .env
 
-## How I structured it
+Edit .env with your details:
+  DATABASE_URL=postgresql://YOUR_USERNAME@localhost:5432/taskmanager
+  JWT_SECRET=any_long_random_string
+  PORT=4000
+  CLIENT_URL=http://localhost:5173
 
-I tried to keep backend and frontend separate.
+Create the database:
+  createdb taskmanager
 
-Backend has:
-- routes for auth, projects, tasks, dashboard
-- middleware for authentication and role checks
-- PostgreSQL for storing users, projects, tasks
+Start the backend:
+  npm run dev
 
-Frontend has:
-- pages like Login, Signup, Dashboard, Project view
-- reusable components like task cards and modals
-- a global auth context to manage user state
+You should see:
+  Connected to PostgreSQL
+  Database tables ready
+  Server running on port 4000
 
-## Running locally
+STEP 3 - Frontend Setup
+------------------------
+Open a new terminal:
+  cd frontend
+  npm install
+  echo "VITE_API_URL=http://localhost:4000" > .env
+  npm run dev
+
+Open browser at: http://localhost:5173
+
+================================================================================
+DATABASE SCHEMA
+================================================================================
+
+users            : id, name, email, password, role
+projects         : id, name, description, created_by
+project_members  : project_id, user_id, role (admin/member)
+tasks            : id, title, description, status, priority, due_date, assignee_id, project_id
+
+================================================================================
+API ENDPOINTS
+================================================================================
+
+METHOD   ENDPOINT                        DESCRIPTION                AUTH
+------   -------                         -----------                ----
+POST     /api/auth/signup                Register new user          Public
+POST     /api/auth/login                 Login, returns JWT         Public
+GET      /api/projects                   List user's projects       Required
+POST     /api/projects                   Create project             Admin only
+GET      /api/projects/:id/tasks         Get tasks for project      Required
+POST     /api/projects/:id/tasks         Create task                Admin only
+PATCH    /api/tasks/:id                  Update task                Required
+POST     /api/projects/:id/members       Add member by email        Admin only
+GET      /api/dashboard                  Dashboard stats            Required
+
+================================================================================
+DEPLOYMENT (RAILWAY)
+================================================================================
+
+- Backend deployed as Node.js service with root directory set to /backend
+- PostgreSQL provisioned via Railway's managed database plugin
+- Frontend deployed as static site with root directory set to /frontend
+
+Backend Environment Variables on Railway:
+  DATABASE_URL = (from Railway PostgreSQL plugin)
+  JWT_SECRET   = (your secret string)
+  PORT         = 4000
+  NODE_ENV     = production
+
+Frontend Environment Variables on Railway:
+  VITE_API_URL = (your backend Railway URL)
+
+================================================================================
+AUTHOR
+================================================================================
+
+GitHub : https://github.com/notadvitiya/team-task-manager
+
+================================================================================
